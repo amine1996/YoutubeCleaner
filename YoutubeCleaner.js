@@ -146,11 +146,20 @@ function main()
    
     //Wrapping afterNextRender function to set garbage
     var nativeAfterNextRender = Polymer.RenderStatus.afterNextRender;
-      Polymer.RenderStatus.afterNextRender = function(){
-        console.log("Wrapped after next render called");
-        nativeAfterNextRender.apply(this,arguments);
-        setGarbage();
-      }
+    Polymer.RenderStatus.afterNextRender = function(){
+      console.log("Wrapped afterNextRender called");
+      nativeAfterNextRender.apply(this,arguments);
+      setGarbage();
+    }
+
+    //Wrapping _atEndOfMicrotask function to set garbage
+    var nativeAtEndOfMicrotask = Polymer.Async._atEndOfMicrotask;
+    Polymer.Async._atEndOfMicrotask = function(){
+      console.log("Wrapped atEndOfMicrotask called");
+      nativeAtEndOfMicrotask.apply(this,arguments);
+      setGarbage();
+    }
+      
   });
 }
 
