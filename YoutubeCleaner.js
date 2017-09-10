@@ -35,7 +35,8 @@ var GARBAGE_AUTHORS = [
   'TheKAIRI78',
   'CYRIL /SUPERKONAR',
   'IbraPlus',
-  'Doozy'
+  'Doozy',
+  "Jojo Bernard"
 ];
 
 /*
@@ -124,25 +125,30 @@ function main()
   GARBAGE_AUTHORS = GARBAGE_AUTHORS.map(function (author) {
     return author.toLowerCase();
   });
-  //While loading change to garbage every 100ms
+  
+  /*//While loading change to garbage every 100ms
   var whileLoading = setInterval(function () {
     setGarbage();
   }, 100);
+  */
+  //After loading is finished
   window.addEventListener('load', function () {
-    clearInterval(whileLoading);
+    //Stop setting garbage every 100ms
+    //clearInterval(whileLoading);
     
     //Add animation end event handling
     document.getElementsByTagName('ytd-app')[0].addEventListener('animationend', function () {
+      console.log("Animationend event");
       setGarbage();
     });
-
-    document.getElementsByTagName('ytd-app')[0].addEventListener('load', function() {
-      setGarbage();  
-    });
-
-    document.getElementsByTagName('ytd-app')[0].addEventListener('readystatechange', function () {
-      setGarbage();
-    });
+   
+    //Wrapping afterNextRender function to set garbage
+    var nativeAfterNextRender = Polymer.RenderStatus.afterNextRender;
+      Polymer.RenderStatus.afterNextRender = function(){
+        console.log("Wrapped after next render called");
+        nativeAfterNextRender.apply(this,arguments);
+        setGarbage();
+      }
   });
 }
 
