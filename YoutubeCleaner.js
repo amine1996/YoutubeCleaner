@@ -94,11 +94,12 @@ function getVideoObjects(videoElements)
 } 
 
 /*
- * For each video object that is garbage (existing in global_garbage array), change title, image and author 
+ * For each video object that is garbage (existing in global_garbage array), change title, image and author or delete
+ * caller : Event or function firing the function
  */
-function setGarbage()
+function setGarbage(caller)
 {
-  console.log('Setting garbage...');
+  console.log('Caller : '+caller+', Setting garbage...');
   var videoElements = getVideoElements();
   var videoObjects = getVideoObjects(videoElements);
   var garbageVideos = videoObjects.filter(function (garbageVideo) {
@@ -130,7 +131,7 @@ function main()
   
   //While loading change to garbage every 100ms
   var whileLoading = setInterval(function () {
-    setGarbage();
+    setGarbage("whileLoading");
   }, 100);
   
   //After loading is finished
@@ -140,24 +141,27 @@ function main()
     
     //Add animation end event handling
     document.getElementsByTagName('ytd-app')[0].addEventListener('animationend', function () {
-      console.log("Animationend event");
-      setGarbage();
+      setGarbage("animationEnd event");
     });
    
     //Wrapping afterNextRender function to set garbage
     var nativeAfterNextRender = Polymer.RenderStatus.afterNextRender;
     Polymer.RenderStatus.afterNextRender = function(){
-      console.log("Wrapped afterNextRender called");
       nativeAfterNextRender.apply(this,arguments);
-      setGarbage();
+      setGarbage("afterNextRender");
     }
 
-    //Wrapping _atEndOfMicrotask function to set garbage
+    //Wrapping _atEndOfMicrotask function to set garbage with a 500ms timer to avoid spam
+    var lastSetGarbage = new Date().getTime();
     var nativeAtEndOfMicrotask = Polymer.Async._atEndOfMicrotask;
     Polymer.Async._atEndOfMicrotask = function(){
-      console.log("Wrapped atEndOfMicrotask called");
       nativeAtEndOfMicrotask.apply(this,arguments);
-      setGarbage();
+      
+      if(new Date().getTime() - lastSetGarbage > 500)
+      {
+        lastSetGarbage = new Date().getTime();
+        setGarbage("_atEndOfMicrotask");
+      }
     }
       
   });
