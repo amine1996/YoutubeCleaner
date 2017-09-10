@@ -7,10 +7,12 @@
 // @version     1
 // @grant       none
 // ==/UserScript==
-Actions = {
+
+var Actions = {
   REPLACE: 0,
   DELETE: 1
 }
+
 var ACTION = Actions.DELETE;
 var GARBAGE_TITLE = 'Garbage';
 var GARBAGE_REAL_NAME = 'Garbage';
@@ -126,15 +128,15 @@ function main()
     return author.toLowerCase();
   });
   
-  /*//While loading change to garbage every 100ms
+  //While loading change to garbage every 100ms
   var whileLoading = setInterval(function () {
     setGarbage();
   }, 100);
-  */
+  
   //After loading is finished
   window.addEventListener('load', function () {
     //Stop setting garbage every 100ms
-    //clearInterval(whileLoading);
+    clearInterval(whileLoading);
     
     //Add animation end event handling
     document.getElementsByTagName('ytd-app')[0].addEventListener('animationend', function () {
